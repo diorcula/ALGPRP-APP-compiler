@@ -15,8 +15,11 @@ public class Stack<T> implements IHANStack<T> {
 
     @Override
     public T pop() {
+//        node = (Node<T>) linkedList.getFirst();
+        T poppedNode = linkedList.getFirst();
         linkedList.removeFirst();
-        return node.element;
+        System.out.println("DE POPPED NODE IS: " + poppedNode);
+        return poppedNode;
     }
 
     @Override
