@@ -18,10 +18,10 @@ public class HANStack<T> implements IHANStack<T> {
             System.out.println("LIST IS LEEG");
             return null;
         } else {
-            System.out.println("ELSE");
+//            System.out.println("ELSE");
             T poppedNode = HANLinkedList.getFirst();
             HANLinkedList.removeFirst();
-            System.out.println("DE POPPED NODE IS: " + poppedNode);
+//            System.out.println("DE POPPED NODE IS: " + poppedNode);
 
             return poppedNode;
         }
@@ -38,6 +38,7 @@ public class HANStack<T> implements IHANStack<T> {
         }
     }
 
+    // delete?
     private static class Node<T> {
         T element;
         Node<T> next;
