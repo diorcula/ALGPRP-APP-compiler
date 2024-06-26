@@ -1,7 +1,7 @@
 package nl.han.ica.icss.parser;
 
 
-import nl.han.ica.datastructures.Stack;
+import nl.han.ica.datastructures.HANStack;
 import nl.han.ica.datastructures.IHANStack;
 import nl.han.ica.icss.ast.*;
 
@@ -18,11 +18,21 @@ public class ASTListener extends ICSSBaseListener {
 
     public ASTListener() {
         ast = new AST();
-        currentContainer = new Stack<>();
+        currentContainer = new HANStack<>();
     }
 
     public AST getAST() {
         return ast;
     }
 
+    @Override
+    public void enterStylesheet(ICSSParser.StylesheetContext ctx) {
+        // zet iets op de stack
+    }
+
+    @Override
+    public void exitStylesheet(ICSSParser.StylesheetContext ctx) {
+        //haal het van de stack af
+        // voeg toe als child aan de volgende
+    }
 }
