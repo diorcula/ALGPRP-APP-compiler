@@ -2,7 +2,6 @@ package nl.han.ica.icss.checker;
 
 import nl.han.ica.icss.ast.*;
 import nl.han.ica.icss.ast.literals.*;
-import nl.han.ica.icss.ast.selectors.TagSelector;
 import nl.han.ica.icss.ast.types.ExpressionType;
 
 
@@ -12,7 +11,6 @@ public class Checker {
 
     public void check(AST ast) {
 //         variableTypes = new HANLinkedList<>();
-        System.out.println("----------- root" + ast.root);
         checkStyleSheet(ast.root);
     }
 
@@ -32,20 +30,15 @@ public class Checker {
             if (child instanceof Declaration) {
                 System.out.println("checking declaration - " + child);
                 checkDeclaration((Declaration) child);
-//                checkDeclaration(child); // maybe moet het toch een node zijn
             }
         }
     }
 
     private void checkDeclaration(ASTNode astNode) {
-        // propertyName moet matchen met de expressionType;
-        // setError als ze niet matchen
         System.out.println("---- checking declaration of " + astNode);
-
         Declaration declaration = (Declaration) astNode;
         ExpressionType expressionType = checkExpression(declaration.expression);
 
-        // todo: check if expressiontype matches propertyname;
         switch (declaration.property.name) {
             case "color":
             case "background-color":
