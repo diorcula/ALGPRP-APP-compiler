@@ -96,12 +96,6 @@ public class ASTListener extends ICSSBaseListener {
         currentContainer.peek().addChild(idSelector);
     }
 
-//    @Override
-//    public void enterBody(ICSSParser.BodyContext ctx) {
-//        ASTNode bodySelector = new ICSSParser.BodyContext(ctx,);
-//
-//    }
-
     @Override
     public void enterDeclaration(ICSSParser.DeclarationContext ctx) {
         ASTNode declaration = new Declaration();
