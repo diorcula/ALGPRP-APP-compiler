@@ -49,7 +49,7 @@ stylesheet: stylerule* EOF;
 
 stylerule: selector OPEN_BRACE body CLOSE_BRACE;
 
-selector: classselector | idselector | tagselector;
+selector: tagselector | idselector | classselector;
 classselector: CLASS_IDENT;
 idselector: ID_IDENT;
 tagselector: LOWER_IDENT;

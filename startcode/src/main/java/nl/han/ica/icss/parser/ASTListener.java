@@ -32,7 +32,7 @@ public class ASTListener extends ICSSBaseListener {
     public void enterStylesheet(ICSSParser.StylesheetContext ctx) {
         // zet iets op de stack
         ASTNode stylesheet = new Stylesheet();
-		currentContainer.push(stylesheet);
+        currentContainer.push(stylesheet);
     }
 
     @Override
@@ -59,6 +59,18 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     @Override
+    public void enterTagselector(ICSSParser.TagselectorContext ctx) {
+        ASTNode tagSelector = new TagSelector(ctx.getText());
+        currentContainer.push(tagSelector);
+    }
+
+    @Override
+    public void exitTagselector(ICSSParser.TagselectorContext ctx) {
+        ASTNode tagSelector = currentContainer.pop();
+        currentContainer.peek().addChild(tagSelector);
+    }
+
+    @Override
     public void enterClassselector(ICSSParser.ClassselectorContext ctx) {
         // let op hier heb je de text nodig om te weten welke class het is
         ASTNode classSelector = new ClassSelector(ctx.getText());
@@ -82,16 +94,4 @@ public class ASTListener extends ICSSBaseListener {
         ASTNode idSelector = currentContainer.pop();
         currentContainer.peek().addChild(idSelector);
     }
-
-//    @Override
-//    public void enterTagselector(ICSSParser.TagselectorContext ctx) {
-//        ASTNode tagSelector = new TagSelector(ctx.getText());
-//        currentContainer.peek().addChild(tagSelector);
-//    }
-//
-//    @Override
-//    public void exitTagselector(ICSSParser.TagselectorContext ctx) {
-//        ASTNode tagSelector = currentContainer.pop();
-//        currentContainer.peek().addChild(tagSelector);
-//    }
 }

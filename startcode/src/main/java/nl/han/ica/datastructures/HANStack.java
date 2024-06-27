@@ -33,7 +33,7 @@ public class HANStack<T> implements IHANStack<T> {
             System.out.println("LIST IS LEEG");
             return null;
         } else {
-            System.out.println(HANLinkedList.getFirst());
+//            System.out.println(HANLinkedList.getFirst());
             return HANLinkedList.getFirst();
         }
     }
