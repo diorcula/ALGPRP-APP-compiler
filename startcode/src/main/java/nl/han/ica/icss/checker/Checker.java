@@ -29,7 +29,7 @@ public class Checker {
             // hier check je meteen een Declaration ipv Selector;
             if (child instanceof Declaration) {
                 System.out.println("checking declaration - " + child);
-                checkDeclaration((Declaration) child);
+                checkDeclaration(child);
             }
         }
     }
@@ -43,17 +43,17 @@ public class Checker {
             case "color":
             case "background-color":
                 if (expressionType != ExpressionType.COLOR) {
-                    astNode.setError(declaration.property.name + " value can only be a color literal.");
+                    astNode.setError(declaration.property.name + " waarde moet een #HEX kleur zijn.");
                 }
                 break;
             case "width":
             case "height":
                 if (expressionType != ExpressionType.PIXEL && expressionType != ExpressionType.PERCENTAGE) {
-                    astNode.setError(declaration.property.name + " value can only be a pixel or percentage literal.");
+                    astNode.setError(declaration.property.name + " waarde moet een pixel of percentage zijn.");
                 }
                 break;
             default:
-                astNode.setError("This property is not known");
+                astNode.setError("De property is onbekend");
                 break;
         }
 
