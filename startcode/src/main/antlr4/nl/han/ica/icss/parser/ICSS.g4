@@ -8,14 +8,12 @@ ELSE: 'else';
 BOX_BRACKET_OPEN: '[';
 BOX_BRACKET_CLOSE: ']';
 
-
 //Literals
 TRUE: 'TRUE';
 FALSE: 'FALSE';
 PIXELSIZE: [0-9]+ 'px';
 PERCENTAGE: [0-9]+ '%';
 SCALAR: [0-9]+;
-
 
 //Color value takes precedence over id idents
 COLOR: '#' [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f] [0-9a-f];
@@ -41,29 +39,27 @@ MIN: '-';
 MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
 
-
-
-
 //--- PARSER: ---
 stylesheet: (variableAssignment | stylerule)* EOF;
-
-variableAssignment: variableReference ASSIGNMENT_OPERATOR expression+ SEMICOLON;
-// er is geen division operation?;
-expression: literal | expression MUL expression | expression (PLUS | MIN) expression;
-
 stylerule: selector OPEN_BRACE body CLOSE_BRACE;
 body: (declaration | variableAssignment)*;
 
-declaration: propertyname COLON  literal SEMICOLON;
+variableAssignment: variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
+
+declaration: propertyname COLON expression SEMICOLON;
+expression: literal |
+            expression MUL expression |
+            expression (PLUS | MIN) expression;
+
 selector: tagselector | idselector | classselector;
 classselector: CLASS_IDENT;
 idselector: ID_IDENT;
 tagselector: LOWER_IDENT;
 variableReference: CAPITAL_IDENT;
-
 propertyname: LOWER_IDENT | CAPITAL_IDENT;
 
-literal: boolliteral | colorliteral | percentageliteral | pixelliteral | scalarliteral;
+literal: boolliteral |variableReference | colorliteral |
+         percentageliteral | pixelliteral | scalarliteral ;
 boolliteral: TRUE|FALSE;
 colorliteral: COLOR;
 percentageliteral: PERCENTAGE;

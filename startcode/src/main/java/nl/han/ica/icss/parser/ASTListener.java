@@ -38,8 +38,6 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void exitStylesheet(ICSSParser.StylesheetContext ctx) {
-        //haal het van de stack af
-        //voeg toe als child aan de volgende
         // de return value van curr.pop() is een T, dus moet je casten naar Stylesheet
         ast.setRoot((Stylesheet) currentContainer.pop());
     }
@@ -57,6 +55,31 @@ public class ASTListener extends ICSSBaseListener {
         // met peek krijg je de eerste terug van de stack,
         // waar je hem als child wil toevoegen
         currentContainer.peek().addChild(styleRule);
+    }
+
+    // gebruik je niet, zelfde als met selector/body etc.
+//    @Override
+//    public void enterVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+//        ASTNode variableAssignment = new VariableAssignment();
+//        currentContainer.push(variableAssignment);
+//    }
+//
+//    @Override
+//    public void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+//        ASTNode variableAssignment = currentContainer.pop();
+//        currentContainer.peek().addChild(variableAssignment);
+//    }
+
+    @Override
+    public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
+        ASTNode variableReference = new VariableReference(ctx.getText());
+        currentContainer.push(variableReference);
+    }
+
+    @Override
+    public void exitVariableReference(ICSSParser.VariableReferenceContext ctx) {
+        ASTNode variableReference = currentContainer.pop();
+        currentContainer.peek().addChild(variableReference);
     }
 
     @Override
