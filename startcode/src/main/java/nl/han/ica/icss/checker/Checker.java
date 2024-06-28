@@ -31,7 +31,7 @@ public class Checker {
                 System.out.println("checking declaration - " + child);
                 checkDeclaration(child);
             }
-        }
+        }   
     }
 
     private void checkDeclaration(ASTNode astNode) {

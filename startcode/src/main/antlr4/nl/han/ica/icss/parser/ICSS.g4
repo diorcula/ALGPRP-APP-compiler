@@ -45,17 +45,21 @@ ASSIGNMENT_OPERATOR: ':=';
 
 
 //--- PARSER: ---
-stylesheet: stylerule* EOF;
+stylesheet: (variableAssignment | stylerule)* EOF;
+
+variableAssignment: variableReference ASSIGNMENT_OPERATOR expression+ SEMICOLON;
+// er is geen division operation?;
+expression: literal | expression MUL expression | expression (PLUS | MIN) expression;
 
 stylerule: selector OPEN_BRACE body CLOSE_BRACE;
+body: (declaration | variableAssignment)*;
 
+declaration: propertyname COLON  literal SEMICOLON;
 selector: tagselector | idselector | classselector;
 classselector: CLASS_IDENT;
 idselector: ID_IDENT;
 tagselector: LOWER_IDENT;
-
-body: declaration*;
-declaration: propertyname COLON  literal SEMICOLON;
+variableReference: CAPITAL_IDENT;
 
 propertyname: LOWER_IDENT | CAPITAL_IDENT;
 
