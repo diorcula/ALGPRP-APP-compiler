@@ -5,6 +5,9 @@ import nl.han.ica.datastructures.HANStack;
 import nl.han.ica.datastructures.IHANStack;
 import nl.han.ica.icss.ast.*;
 import nl.han.ica.icss.ast.literals.*;
+import nl.han.ica.icss.ast.operations.AddOperation;
+import nl.han.ica.icss.ast.operations.MultiplyOperation;
+import nl.han.ica.icss.ast.operations.SubtractOperation;
 import nl.han.ica.icss.ast.selectors.ClassSelector;
 import nl.han.ica.icss.ast.selectors.IdSelector;
 import nl.han.ica.icss.ast.selectors.TagSelector;
@@ -31,14 +34,12 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterStylesheet(ICSSParser.StylesheetContext ctx) {
-        // zet iets op de stack
         ASTNode stylesheet = new Stylesheet();
         currentContainer.push(stylesheet);
     }
 
     @Override
     public void exitStylesheet(ICSSParser.StylesheetContext ctx) {
-        // de return value van curr.pop() is een T, dus moet je casten naar Stylesheet
         ast.setRoot((Stylesheet) currentContainer.pop());
     }
 
@@ -51,35 +52,7 @@ public class ASTListener extends ICSSBaseListener {
     @Override
     public void exitStylerule(ICSSParser.StyleruleContext ctx) {
         ASTNode styleRule = currentContainer.pop();
-        // je gebruikt hier peek() omdat de stylerule er vanaf.
-        // met peek krijg je de eerste terug van de stack,
-        // waar je hem als child wil toevoegen
         currentContainer.peek().addChild(styleRule);
-    }
-
-    // gebruik je niet, zelfde als met selector/body etc.
-//    @Override
-//    public void enterVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
-//        ASTNode variableAssignment = new VariableAssignment();
-//        currentContainer.push(variableAssignment);
-//    }
-//
-//    @Override
-//    public void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
-//        ASTNode variableAssignment = currentContainer.pop();
-//        currentContainer.peek().addChild(variableAssignment);
-//    }
-
-    @Override
-    public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
-        ASTNode variableReference = new VariableReference(ctx.getText());
-        currentContainer.push(variableReference);
-    }
-
-    @Override
-    public void exitVariableReference(ICSSParser.VariableReferenceContext ctx) {
-        ASTNode variableReference = currentContainer.pop();
-        currentContainer.peek().addChild(variableReference);
     }
 
     @Override
@@ -120,6 +93,31 @@ public class ASTListener extends ICSSBaseListener {
     }
 
     @Override
+    public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
+        ASTNode variableReference = new VariableReference(ctx.getText());
+        currentContainer.peek().addChild(variableReference);
+    }
+
+    // Je moet deze niet van de stack halen, references zijn er altijd;
+//    @Override
+//    public void exitVariableReference(ICSSParser.VariableReferenceContext ctx) {
+//        ASTNode variableReference = currentContainer.pop();
+//        currentContainer.peek().addChild(variableReference);
+//    }
+
+    @Override
+    public void enterVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+        ASTNode variableAssignment = new VariableAssignment();
+        currentContainer.push(variableAssignment);
+    }
+
+    @Override
+    public void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+        ASTNode variableAssignment = currentContainer.pop();
+        currentContainer.peek().addChild(variableAssignment);
+    }
+
+    @Override
     public void enterDeclaration(ICSSParser.DeclarationContext ctx) {
         ASTNode declaration = new Declaration();
         currentContainer.push(declaration);
@@ -130,6 +128,63 @@ public class ASTListener extends ICSSBaseListener {
         ASTNode declaration = currentContainer.pop();
         currentContainer.peek().addChild(declaration);
     }
+
+    @Override
+    public void enterExpression(ICSSParser.ExpressionContext ctx) {
+        if (ctx.getChildCount() == 3) {
+            Operation operation;
+            switch (ctx.getChild(1).getText()) {
+                case "*":
+                    operation = new MultiplyOperation();
+                    break;
+                case "+":
+                    operation = new AddOperation();
+                    break;
+                default:
+                    operation = new SubtractOperation();
+            }
+            currentContainer.push(operation);
+        }
+    }
+
+    @Override
+    public void exitExpression(ICSSParser.ExpressionContext ctx) {
+        if (expressionHasTerminalNode(ctx)) {
+            ASTNode operation = currentContainer.pop();
+            currentContainer.peek().addChild(operation);
+        }
+    }
+
+    private boolean expressionHasTerminalNode(ICSSParser.ExpressionContext ctx) {
+        return ctx.PLUS() != null || ctx.MIN() != null || ctx.MUL() != null;
+    }
+
+    @Override
+    public void enterIfClause(ICSSParser.IfClauseContext ctx) {
+
+        ASTNode ifClause = new IfClause();
+        currentContainer.push(ifClause);
+
+    }
+
+    @Override
+    public void exitIfClause(ICSSParser.IfClauseContext ctx) {
+        ASTNode ifClause = currentContainer.pop();
+        currentContainer.peek().addChild(ifClause);
+    }
+
+    @Override
+    public void enterElseClause(ICSSParser.ElseClauseContext ctx) {
+        ASTNode elseClause = new ElseClause();
+        currentContainer.push(elseClause);
+    }
+
+    @Override
+    public void exitElseClause(ICSSParser.ElseClauseContext ctx) {
+        ASTNode elseClause = currentContainer.pop();
+        currentContainer.peek().addChild(elseClause);
+    }
+
 
     @Override
     public void enterPropertyname(ICSSParser.PropertynameContext ctx) {

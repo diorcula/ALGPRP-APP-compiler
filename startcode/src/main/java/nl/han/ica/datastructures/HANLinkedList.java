@@ -1,19 +1,27 @@
 package nl.han.ica.datastructures;
 
 public class HANLinkedList<T> implements IHANLinkedList<T> {
-    // doordat er gebruik gemaakt wordt van stack is het niet nodig om de positie methoden uit te werken
-    private Node<T> head;
+
+    private LinkedListNode<T> head = null;
 
     public HANLinkedList() {
         // maak eerst een lege list (node)
-        head = new Node<>(null, null);
+//        head = new LinkedListNode<>(null, null);
     }
 
     @Override
     public void addFirst(T value) {
         // voegt een nieuwe node vooraan toe
-        Node<T> newNode = new Node<T>(value, head.next);
-        head.next = newNode;
+//        Node<T> newNode = new Node<T>(value, head.next);
+//        head.next = newNode;
+
+        if (head == null) {
+            head = new LinkedListNode<>(value);
+        } else {
+            LinkedListNode<T> toAdd = new LinkedListNode<>(value);
+            toAdd.setNext(head);
+            head = toAdd;
+        }
     }
 
     @Override
@@ -28,6 +36,27 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
 
     @Override
     public void delete(int pos) {
+//
+//        if (pos == 0) {
+//            removeFirst();
+//            return;
+//        }
+//
+//        if (pos > getSize()) {
+//            return;
+//        }
+//
+//        LinkedListNode<T> current = head;
+//
+//        int count = 0;
+//
+//        while (count != pos - 1) {
+//            current = current.getNext();
+//            count++;
+//        }
+//
+//        LinkedListNode<T> toRemove = current.getNext();
+//        current.setNext(toRemove.getNext());
 
     }
 
@@ -38,43 +67,42 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
 
     @Override
     public void removeFirst() {
-        head.next = head.next.next;
+        head = head.getNext();
     }
 
     @Override
     public T getFirst() {
-        System.out.println("RETURNING the first: " + head.next.element);
-        return head.next.element;
+        return head.getValue();
     }
 
     @Override
     public int getSize() {
         int size = 0;
-        Node<T> current = head;
-        while (current.next != null) {
+        LinkedListNode<T> current = head;
+        while (current.getNext() != null) {
             size++;
-            current = current.next;
+            current = current.getNext();
         }
         return size;
     }
 
-    private static class Node<T> {
-        T element;
-        Node<T> next;
-
-        Node(T element, Node<T> next) {
-            this.element = element;
-            this.next = next;
-        }
+//    private static class Node<T> {
+//        T element;
+//        Node<T> next;
+//
+//        Node(T element, Node<T> next) {
+//            this.element = element;
+//            this.next = next;
+//        }
     }
 
-    public void printList(HANLinkedList<T> list){
-        Node<T> currentNode = list.head.next;
-        System.out.println("DE LIST: ");
-
-        while(currentNode != null){
-            System.out.println(currentNode.element + "---");
-            currentNode = currentNode.next;
-        }
-    }
-}
+//    public void printList(HANLinkedList<T> list){
+//        Node<T> currentNode = list.head.next;
+//        System.out.println("DE LIST: ");
+//
+//        while(currentNode != null){
+//            System.out.println(currentNode.element + "---");
+//            currentNode = currentNode.next;
+//        }
+//    }
+//}

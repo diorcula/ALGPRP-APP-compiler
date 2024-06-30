@@ -40,27 +40,27 @@ MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
 
 //--- PARSER: ---
-stylesheet: (variableAssignment | stylerule)* EOF;
+stylesheet: variableAssignment* stylerule* EOF;
 stylerule: selector OPEN_BRACE body CLOSE_BRACE;
-body: (declaration | variableAssignment)*;
+body: (declaration | ifClause | variableAssignment)*;
 
-variableAssignment: variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
+ifClause: IF BOX_BRACKET_OPEN (variableReference | boolliteral ) BOX_BRACKET_CLOSE OPEN_BRACE body CLOSE_BRACE elseClause?;
+elseClause: ELSE OPEN_BRACE body CLOSE_BRACE;
+variableAssignment: variableReference ASSIGNMENT_OPERATOR expression+ SEMICOLON;
 
 declaration: propertyname COLON expression SEMICOLON;
-expression: literal |
-            expression MUL expression |
-            expression (PLUS | MIN) expression;
+expression: literal | expression MUL expression | expression (PLUS | MIN) expression;
 
 selector: tagselector | idselector | classselector;
 classselector: CLASS_IDENT;
 idselector: ID_IDENT;
 tagselector: LOWER_IDENT;
-variableReference: CAPITAL_IDENT;
 propertyname: LOWER_IDENT | CAPITAL_IDENT;
 
 literal: boolliteral |variableReference | colorliteral |
          percentageliteral | pixelliteral | scalarliteral ;
 boolliteral: TRUE|FALSE;
+variableReference: CAPITAL_IDENT;
 colorliteral: COLOR;
 percentageliteral: PERCENTAGE;
 pixelliteral: PIXELSIZE;
