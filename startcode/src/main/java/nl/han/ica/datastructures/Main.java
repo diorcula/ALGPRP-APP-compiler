@@ -13,7 +13,7 @@ public class Main {
 //
         HANStack.peek();
 //        HANStack.pop();
-//        HANStack.printStack();
+        HANStack.printStack();
 
     }
 }

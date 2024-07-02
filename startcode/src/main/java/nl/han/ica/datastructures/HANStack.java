@@ -1,7 +1,7 @@
 package nl.han.ica.datastructures;
 
 public class HANStack<T> implements IHANStack<T> {
-    IHANLinkedList<T> HANLinkedList;
+    HANLinkedList<T> HANLinkedList;
 
     public HANStack() {
         HANLinkedList = new HANLinkedList<>();
@@ -14,46 +14,42 @@ public class HANStack<T> implements IHANStack<T> {
 
     @Override
     public T pop() {
-//        if (HANLinkedList.getSize() == 0) {
-//            System.out.println("LIST IS LEEG");
-//            return null;
-//        } else {
+        if (HANLinkedList.getSize() == 0) {
+            System.out.println("LIST IS LEEG");
+            return null;
+        } else {
 //            System.out.println("ELSE");
             T poppedNode = HANLinkedList.getFirst();
             HANLinkedList.removeFirst();
 //            System.out.println("DE POPPED NODE IS: " + poppedNode);
+
             return poppedNode;
-//        }
+        }
     }
 
     @Override
     public T peek() {
-//        if (HANLinkedList.getSize() == 0) {
-//            System.out.println("LIST IS LEEG");
-//            return null;
-//        } else {
-////            System.out.println(HANLinkedList.getFirst());
-//            return HANLinkedList.getFirst();
-//        }
-        return HANLinkedList.getFirst();
+        if (HANLinkedList.getSize() == 0) {
+            System.out.println("LIST IS LEEG");
+            return null;
+        } else {
+//            System.out.println(HANLinkedList.getFirst());
+            return HANLinkedList.getFirst();
+        }
     }
 
     // delete?
-//    private static class Node<T> {
-//        T element;
-//        Node<T> next;
-//
-//        Node(T element, Node<T> next) {
-//            this.element = element;
-//            this.next = next;
-//        }
-//    }
+    private static class Node<T> {
+        T element;
+        Node<T> next;
 
-//    public void printStack(){
-//        HANLinkedList.printList(HANLinkedList);
-//    }
+        Node(T element, Node<T> next) {
+            this.element = element;
+            this.next = next;
+        }
+    }
 
-    public boolean isListEmpty() {
-        return HANLinkedList.getSize() == 0;
+    public void printStack(){
+        HANLinkedList.printList(HANLinkedList);
     }
 }
