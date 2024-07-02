@@ -14,28 +14,28 @@ public class HANStack<T> implements IHANStack<T> {
 
     @Override
     public T pop() {
-        if (HANLinkedList.getSize() == 0) {
-            System.out.println("LIST IS LEEG");
-            return null;
-        } else {
-//            System.out.println("ELSE");
+//        if (HANLinkedList.getSize() == 0) {
+//            System.out.println("LIST IS LEEG");
+//            return null;
+//        } else {
+////            System.out.println("ELSE");
             T poppedNode = HANLinkedList.getFirst();
             HANLinkedList.removeFirst();
 //            System.out.println("DE POPPED NODE IS: " + poppedNode);
 
             return poppedNode;
-        }
+//        }
     }
 
     @Override
     public T peek() {
-        if (HANLinkedList.getSize() == 0) {
-            System.out.println("LIST IS LEEG");
-            return null;
-        } else {
+//        if (HANLinkedList.getSize() == 0) {
+//            System.out.println("LIST IS LEEG");
+//            return null;
+//        } else {
 //            System.out.println(HANLinkedList.getFirst());
             return HANLinkedList.getFirst();
-        }
+//        }
     }
 
     // delete?

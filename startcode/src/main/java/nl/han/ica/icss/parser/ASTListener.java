@@ -57,30 +57,30 @@ public class ASTListener extends ICSSBaseListener {
         currentContainer.peek().addChild(styleRule);
     }
 
-    // gebruik je niet, zelfde als met selector/body etc.
-//    @Override
-//    public void enterVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
-//        ASTNode variableAssignment = new VariableAssignment();
-//        currentContainer.push(variableAssignment);
-//    }
-//
-//    @Override
-//    public void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
-//        ASTNode variableAssignment = currentContainer.pop();
-//        currentContainer.peek().addChild(variableAssignment);
-//    }
+    @Override
+    public void enterVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+        ASTNode variableAssignment = new VariableAssignment();
+        currentContainer.push(variableAssignment);
+    }
 
     @Override
+    public void exitVariableAssignment(ICSSParser.VariableAssignmentContext ctx) {
+        ASTNode variableAssignment = currentContainer.pop();
+        currentContainer.peek().addChild(variableAssignment);
+    }
+
+        @Override
     public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
         ASTNode variableReference = new VariableReference(ctx.getText());
-        currentContainer.push(variableReference);
-    }
-
-    @Override
-    public void exitVariableReference(ICSSParser.VariableReferenceContext ctx) {
-        ASTNode variableReference = currentContainer.pop();
         currentContainer.peek().addChild(variableReference);
     }
+
+    // niet exit, want je wilt de reference behouden
+//    @Override
+//    public void exitVariableReference(ICSSParser.VariableReferenceContext ctx) {
+//        ASTNode variableReference = currentContainer.pop();
+//        currentContainer.peek().addChild(variableReference);
+//    }
 
     @Override
     public void enterTagselector(ICSSParser.TagselectorContext ctx) {

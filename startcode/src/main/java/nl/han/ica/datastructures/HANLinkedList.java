@@ -1,24 +1,29 @@
 package nl.han.ica.datastructures;
 
+import nl.han.ica.icss.checker.SemanticError;
+
 public class HANLinkedList<T> implements IHANLinkedList<T> {
     // doordat er gebruik gemaakt wordt van stack is het niet nodig om de positie methoden uit te werken
-    private Node<T> head;
+    private Node<T> head = null;
 
     public HANLinkedList() {
         // maak eerst een lege list (node)
-        head = new Node<>(null, null);
+//        head = new Node<>(null, null);
     }
 
     @Override
     public void addFirst(T value) {
-        // voegt een nieuwe node vooraan toe
-        Node<T> newNode = new Node<T>(value, head.next);
-        head.next = newNode;
+        if (head == null) {
+          head = new Node<T>(value, null);
+        } else {
+            Node<T> newNode = new Node<T>(value, head);
+            head = newNode;
+        }
     }
 
     @Override
     public void clear() {
-// ngebruik hiervan niet nodig, er is altijd een node.
+
     }
 
     @Override
@@ -38,13 +43,15 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
 
     @Override
     public void removeFirst() {
-        head.next = head.next.next;
+        head = head.next;
     }
 
     @Override
     public T getFirst() {
-        System.out.println("RETURNING the first: " + head.next.element);
-        return head.next.element;
+        if (head == null) {
+            throw new RuntimeException("FOUTJE");
+        }
+        return head.element;
     }
 
     @Override
@@ -58,6 +65,16 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
         return size;
     }
 
+    public void printList(HANLinkedList<T> list) {
+        Node<T> currentNode = list.head.next;
+        System.out.println("DE LIST: ");
+
+        while (currentNode != null) {
+            System.out.println(currentNode.element + "---");
+            currentNode = currentNode.next;
+        }
+    }
+
     private static class Node<T> {
         T element;
         Node<T> next;
@@ -65,16 +82,6 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
         Node(T element, Node<T> next) {
             this.element = element;
             this.next = next;
-        }
-    }
-
-    public void printList(HANLinkedList<T> list){
-        Node<T> currentNode = list.head.next;
-        System.out.println("DE LIST: ");
-
-        while(currentNode != null){
-            System.out.println(currentNode.element + "---");
-            currentNode = currentNode.next;
         }
     }
 }
