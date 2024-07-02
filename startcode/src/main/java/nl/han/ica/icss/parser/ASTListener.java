@@ -5,6 +5,9 @@ import nl.han.ica.datastructures.HANStack;
 import nl.han.ica.datastructures.IHANStack;
 import nl.han.ica.icss.ast.*;
 import nl.han.ica.icss.ast.literals.*;
+import nl.han.ica.icss.ast.operations.AddOperation;
+import nl.han.ica.icss.ast.operations.MultiplyOperation;
+import nl.han.ica.icss.ast.operations.SubtractOperation;
 import nl.han.ica.icss.ast.selectors.ClassSelector;
 import nl.han.ica.icss.ast.selectors.IdSelector;
 import nl.han.ica.icss.ast.selectors.TagSelector;
@@ -69,18 +72,45 @@ public class ASTListener extends ICSSBaseListener {
         currentContainer.peek().addChild(variableAssignment);
     }
 
-        @Override
+    @Override
     public void enterVariableReference(ICSSParser.VariableReferenceContext ctx) {
         ASTNode variableReference = new VariableReference(ctx.getText());
         currentContainer.peek().addChild(variableReference);
     }
 
-    // niet exit, want je wilt de reference behouden
+// niet exit, want je wilt de reference behouden
 //    @Override
 //    public void exitVariableReference(ICSSParser.VariableReferenceContext ctx) {
 //        ASTNode variableReference = currentContainer.pop();
 //        currentContainer.peek().addChild(variableReference);
 //    }
+
+
+    @Override
+    public void enterExpression(ICSSParser.ExpressionContext ctx) {
+        // er zijn 3 onderdelen in een expression; x + y = z --> 0 + 1 = 3;
+        if (ctx.getChildCount() == 3) {
+            Operation operation = null;
+            switch (ctx.getChild(1).getText()) {
+                case "*":
+                    operation = new MultiplyOperation();
+                    break;
+                case "+":
+                    operation = new AddOperation();
+                    break;
+                case "-":
+                    operation = new SubtractOperation();
+                    break;
+            }
+            currentContainer.push(operation);
+        }
+    }
+
+    @Override
+    public void exitExpression(ICSSParser.ExpressionContext ctx) {
+        ASTNode operation = currentContainer.pop();
+        currentContainer.peek().addChild(operation);
+    }
 
     @Override
     public void enterTagselector(ICSSParser.TagselectorContext ctx) {
