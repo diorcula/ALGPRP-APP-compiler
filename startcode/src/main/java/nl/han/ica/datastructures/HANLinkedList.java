@@ -1,23 +1,56 @@
 package nl.han.ica.datastructures;
 
-import nl.han.ica.icss.checker.SemanticError;
-
 public class HANLinkedList<T> implements IHANLinkedList<T> {
-    // doordat er gebruik gemaakt wordt van stack is het niet nodig om de positie methoden uit te werken
-    private Node<T> head = null;
+    private ListNode<T> head = null;
+//    private ListNode<T> head;
 
     public HANLinkedList() {
-        // maak eerst een lege list (node)
-//        head = new Node<>(null, null);
+        head = new ListNode<T>(null, null);
     }
 
     @Override
     public void addFirst(T value) {
         if (head == null) {
-          head = new Node<T>(value, null);
+            head = new ListNode<T>(value, null);
         } else {
-            Node<T> newNode = new Node<T>(value, head);
+            ListNode<T> newNode = new ListNode<T>(value, head);
             head = newNode;
+        }
+    }
+
+    @Override
+    public void removeFirst() {
+        if (head.next != null) {
+            head = head.next;
+        }
+    }
+
+    @Override
+    public T getFirst() {
+//        if (head == null) {
+//          throw new RuntimeException("List is empty");
+//        }
+        return head.element;
+    }
+
+    @Override
+    public int getSize() {
+        int size = 0;
+        ListNode<T> current = head;
+        while (current.next != null) {
+            size++;
+            current = current.next;
+        }
+        return size;
+    }
+
+    public void printList(HANLinkedList<T> list) {
+        ListNode<T> currentListNode = list.head.next;
+        System.out.println("DE LIST: ");
+
+        while (currentListNode != null) {
+            System.out.println(currentListNode.element + "---");
+            currentListNode = currentListNode.next;
         }
     }
 
@@ -41,47 +74,14 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
         return null;
     }
 
-    @Override
-    public void removeFirst() {
-        head = head.next;
-    }
-
-    @Override
-    public T getFirst() {
-        if (head == null) {
-            throw new RuntimeException("FOUTJE");
-        }
-        return head.element;
-    }
-
-    @Override
-    public int getSize() {
-        int size = 0;
-        Node<T> current = head;
-        while (current.next != null) {
-            size++;
-            current = current.next;
-        }
-        return size;
-    }
-
-    public void printList(HANLinkedList<T> list) {
-        Node<T> currentNode = list.head.next;
-        System.out.println("DE LIST: ");
-
-        while (currentNode != null) {
-            System.out.println(currentNode.element + "---");
-            currentNode = currentNode.next;
-        }
-    }
-
-    private static class Node<T> {
+    private static class ListNode<T> {
         T element;
-        Node<T> next;
+        ListNode<T> next;
 
-        Node(T element, Node<T> next) {
+        ListNode(T element, ListNode<T> next) {
             this.element = element;
             this.next = next;
         }
     }
+
 }

@@ -12,6 +12,8 @@ import nl.han.ica.icss.ast.selectors.ClassSelector;
 import nl.han.ica.icss.ast.selectors.IdSelector;
 import nl.han.ica.icss.ast.selectors.TagSelector;
 
+import java.util.Stack;
+
 /**
  * This class extracts the ICSS Abstract Syntax Tree from the Antlr Parse tree.
  */
@@ -21,7 +23,8 @@ public class ASTListener extends ICSSBaseListener {
     private AST ast;
 
     //Use this to keep track of the parent nodes when recursively traversing the ast
-    private IHANStack<ASTNode> currentContainer;
+    private HANStack<ASTNode> currentContainer;
+//    private Stack<ASTNode> currentContainer;
 
     public ASTListener() {
         ast = new AST();
@@ -34,14 +37,12 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterStylesheet(ICSSParser.StylesheetContext ctx) {
-        // zet iets op de stack
         ASTNode stylesheet = new Stylesheet();
         currentContainer.push(stylesheet);
     }
 
     @Override
     public void exitStylesheet(ICSSParser.StylesheetContext ctx) {
-        // de return value van curr.pop() is een T, dus moet je casten naar Stylesheet
         ast.setRoot((Stylesheet) currentContainer.pop());
     }
 
@@ -54,9 +55,7 @@ public class ASTListener extends ICSSBaseListener {
     @Override
     public void exitStylerule(ICSSParser.StyleruleContext ctx) {
         ASTNode styleRule = currentContainer.pop();
-        // je gebruikt hier peek() omdat de stylerule er vanaf.
-        // met peek krijg je de eerste terug van de stack,
-        // waar je hem als child wil toevoegen
+        System.out.println(currentContainer.peek() + " " + styleRule);
         currentContainer.peek().addChild(styleRule);
     }
 
