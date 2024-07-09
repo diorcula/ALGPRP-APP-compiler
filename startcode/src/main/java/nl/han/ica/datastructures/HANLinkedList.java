@@ -5,7 +5,7 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
 //    private ListNode<T> head;
 
     public HANLinkedList() {
-        head = new ListNode<T>(null, null);
+//        head = new ListNode<T>(null, null);
     }
 
     @Override
@@ -20,9 +20,7 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
 
     @Override
     public void removeFirst() {
-        if (head.next != null) {
             head = head.next;
-        }
     }
 
     @Override

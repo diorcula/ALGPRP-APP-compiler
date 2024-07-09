@@ -1,7 +1,7 @@
 package nl.han.ica.datastructures;
 
 public class HANStack<T> implements IHANStack<T> {
-    HANLinkedList<T> HANLinkedList;
+    IHANLinkedList<T> HANLinkedList;
 
     public HANStack() {
         HANLinkedList = new HANLinkedList<>();
@@ -14,11 +14,8 @@ public class HANStack<T> implements IHANStack<T> {
 
     @Override
     public T pop() {
-        System.out.println("POP");
         T poppedNode = HANLinkedList.getFirst();
-        System.out.println(poppedNode + " poppednode");
         HANLinkedList.removeFirst();
-        System.out.println("removed first");
         return poppedNode;
     }
 
