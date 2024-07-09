@@ -3,12 +3,9 @@ package nl.han.ica.datastructures;
 import nl.han.ica.icss.checker.SemanticError;
 
 public class HANLinkedList<T> implements IHANLinkedList<T> {
-    // doordat er gebruik gemaakt wordt van stack is het niet nodig om de positie methoden uit te werken
     private Node<T> head = null;
 
     public HANLinkedList() {
-        // maak eerst een lege list (node)
-//        head = new Node<>(null, null);
     }
 
     @Override
@@ -19,26 +16,6 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
             Node<T> newNode = new Node<T>(value, head);
             head = newNode;
         }
-    }
-
-    @Override
-    public void clear() {
-
-    }
-
-    @Override
-    public void insert(int index, T value) {
-
-    }
-
-    @Override
-    public void delete(int pos) {
-
-    }
-
-    @Override
-    public T get(int pos) {
-        return null;
     }
 
     @Override
@@ -83,5 +60,25 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
             this.element = element;
             this.next = next;
         }
+    }
+
+    @Override
+    public void clear() {
+
+    }
+
+    @Override
+    public void insert(int index, T value) {
+
+    }
+
+    @Override
+    public void delete(int pos) {
+
+    }
+
+    @Override
+    public T get(int pos) {
+        return null;
     }
 }

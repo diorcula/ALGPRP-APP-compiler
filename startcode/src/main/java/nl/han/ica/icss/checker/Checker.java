@@ -1,7 +1,6 @@
 package nl.han.ica.icss.checker;
 
 import nl.han.ica.datastructures.HANLinkedList;
-import nl.han.ica.datastructures.HashmapTableLinked;
 import nl.han.ica.datastructures.IHANLinkedList;
 import nl.han.ica.icss.ast.*;
 import nl.han.ica.icss.ast.literals.*;
@@ -10,18 +9,13 @@ import nl.han.ica.icss.ast.operations.MultiplyOperation;
 import nl.han.ica.icss.ast.operations.SubtractOperation;
 import nl.han.ica.icss.ast.types.ExpressionType;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
-
 
 public class Checker {
-
-    private HashmapTableLinked variableTypes;
+    private IHANLinkedList<HashMap<String, ExpressionType>> variableTypes;
 
     public void check(AST ast) {
-        variableTypes = new HashmapTableLinked<>();
-//        variableTypes = getList(ast.root);
+        variableTypes = new HANLinkedList<>();
         checkStyleSheet(ast.root);
     }
 
@@ -41,7 +35,6 @@ public class Checker {
 
     private void checkStyleRule(ASTNode astNode) {
         for (ASTNode child : astNode.getChildren()) {
-            // hier check je meteen een Declaration ipv Selector;
             if (child instanceof Declaration) {
                 System.out.println("checking declaration - " + child);
                 checkDeclaration(child);
@@ -50,8 +43,11 @@ public class Checker {
     }
 
 
+    /*
+    CHECK 4: Controleer of bij declaraties het type van de value klopt met de property.
+    Declaraties zoals `width: #ff0000` of `color: 12px` zijn natuurlijk onzin.
+    */
     private void checkDeclaration(ASTNode astNode) {
-        System.out.println("---- checking declaration of " + astNode);
         Declaration declaration = (Declaration) astNode;
         ExpressionType expressionType = checkExpression(declaration.expression);
 
@@ -75,8 +71,48 @@ public class Checker {
 
     }
 
-    private boolean checkExpressionTypeAllowed(ExpressionType expressionType, ExpressionType previousExpressionType) {
-        return (previousExpressionType != null) && expressionType != previousExpressionType;
+    /*
+    check van welk type een expression is.
+     */
+    private ExpressionType checkExpression(Expression expression) {
+//        if (expression instanceof VariableReference) {
+//            return checkVariableReference((VariableReference) expression); //---> kijk of hier de var reference al gedefined is.
+//        } else if (expression instanceof Operation) {
+//            return checkOperation((Operation) expression); //---> check of de operation wel mag.
+//        } else {
+        if (expression instanceof PercentageLiteral) {
+            return ExpressionType.PERCENTAGE;
+        } else if (expression instanceof PixelLiteral) {
+            return ExpressionType.PIXEL;
+        } else if (expression instanceof ColorLiteral) {
+            return ExpressionType.COLOR;
+        } else if (expression instanceof ScalarLiteral) {
+            return ExpressionType.SCALAR;
+        } else if (expression instanceof BoolLiteral) {
+            return ExpressionType.BOOL;
+        }
+//        }
+
+        return ExpressionType.UNDEFINED;
+    }
+
+    /*
+    CH01: Controleer of er geen variabelen worden gebruikt die niet gedefinieerd zijn.
+    --> Maak gebruik van een scope (een nieuw blok) waar je variabelen kan definen.
+    --> voeg variabelen toe aan de scope.
+    --> Check of de variabele al bestaat in de scope.
+     */
+    private void addNewScope() {
+        HashMap<String, ExpressionType> newScope = new HashMap<>();
+        variableTypes.addFirst(newScope); // Assuming the latest scope is at the beginning.
+    }
+
+    private void addVariableToCurrentScope(String variableName, ExpressionType type) {
+        if (variableTypes.getSize() == 0) {
+            addNewScope(); // Ensure there's at least one scope.
+        }
+        HashMap<String, ExpressionType> currentScope = variableTypes.getFirst(); // Get the current scope.
+        currentScope.put(variableName, type); // Add or update the variable in the current scope.
     }
 
     private void checkVariableAssignment(ASTNode astNode) {
@@ -88,92 +124,49 @@ public class Checker {
             astNode.setError("Variable assignment is undefined/null.");
             return;
         }
-
-        ExpressionType previousExpressionType = (ExpressionType) this.variableTypes.getVariable(variableReference.name);
-        if (checkExpressionTypeAllowed(expressionType, previousExpressionType)) {
-            astNode.setError("Variabele mag niet van type veranderen van " + previousExpressionType + " naar " + expressionType);
-        }
-        variableTypes.putVariable(variableReference.name, expressionType);
-    }
-
-    private ExpressionType checkOperation(Operation operation) {
-        ExpressionType left;
-        ExpressionType right;
-
-        if (operation.lhs instanceof Operation) {
-            left = this.checkOperation((Operation) operation.lhs);
-        } else {
-            left = checkExpression(operation.lhs);
-        }
-
-        if (operation.rhs instanceof Operation) {
-            right = this.checkOperation((Operation) operation.rhs);
-        } else {
-            right = checkExpression(operation.rhs);
-        }
-
-        if (left == ExpressionType.COLOR || right == ExpressionType.COLOR) {
-            operation.setError("Colors are not allowed in operations.");
-            return ExpressionType.UNDEFINED;
-        }
-
-        if (operation instanceof MultiplyOperation) {
-            if (left != ExpressionType.SCALAR && right != ExpressionType.SCALAR) {
-                operation.setError("Multiply is only allowed with at least one scalar literal.");
-                return ExpressionType.UNDEFINED;
-            }
-            return right != ExpressionType.SCALAR ? right : left;
-        } else if ((operation instanceof SubtractOperation || operation instanceof AddOperation) && left != right) {
-            operation.setError("You can only do add and subtract operations with the same literal.");
-            return ExpressionType.UNDEFINED;
-        }
-        return left;
-    }
-
-    private ExpressionType checkVariableReference(VariableReference expression) {
-        ExpressionType expressionType = (ExpressionType) variableTypes.getVariable((expression).name);
-        if (expressionType == null) {
-            expression.setError("Variable not yet declared or in scope.");
-            return null;
-        }
-        return expressionType;
+//
+//        ExpressionType previousExpressionType = (ExpressionType) this.variableTypes.getFirst().get(variableReference.name);
+//        if (checkExpressionTypeAllowed(expressionType, previousExpressionType)) {
+//            astNode.setError("Variabele mag niet van type veranderen van " + previousExpressionType + " naar " + expressionType);
+//        }
+        addVariableToCurrentScope(variableReference.name, expressionType);
     }
 
 
-    private ExpressionType checkExpression(Expression expression) {
+    //-------------------
 
-        if (expression instanceof VariableReference) {
-            return checkVariableReference((VariableReference) expression);
-        } else if (expression instanceof Operation) {
-            return checkOperation((Operation) expression);
-        } else {
-            if (expression instanceof PercentageLiteral) {
-                return ExpressionType.PERCENTAGE;
-            } else if (expression instanceof PixelLiteral) {
-                return ExpressionType.PIXEL;
-            } else if (expression instanceof ColorLiteral) {
-                return ExpressionType.COLOR;
-            } else if (expression instanceof ScalarLiteral) {
-                return ExpressionType.SCALAR;
-            } else if (expression instanceof BoolLiteral) {
-                return ExpressionType.BOOL;
-            }
-        }
+//    private ExpressionType checkOperation(Operation operation) {
+//        ExpressionType left;
+//        ExpressionType right;
+//
+//        if (operation.lhs instanceof Operation) {
+//            left = this.checkOperation((Operation) operation.lhs);
+//        } else {
+//            left = checkExpression(operation.lhs);
+//        }
+//
+//        if (operation.rhs instanceof Operation) {
+//            right = this.checkOperation((Operation) operation.rhs);
+//        } else {
+//            right = checkExpression(operation.rhs);
+//        }
+//
+//        if (left == ExpressionType.COLOR || right == ExpressionType.COLOR) {
+//            operation.setError("Colors are not allowed in operations.");
+//            return ExpressionType.UNDEFINED;
+//        }
+//
+//        if (operation instanceof MultiplyOperation) {
+//            if (left != ExpressionType.SCALAR && right != ExpressionType.SCALAR) {
+//                operation.setError("Multiply is only allowed with at least one scalar literal.");
+//                return ExpressionType.UNDEFINED;
+//            }
+//            return right != ExpressionType.SCALAR ? right : left;
+//        } else if ((operation instanceof SubtractOperation || operation instanceof AddOperation) && left != right) {
+//            operation.setError("You can only do add and subtract operations with the same literal.");
+//            return ExpressionType.UNDEFINED;
+//        }
+//        return left;
+//    }
 
-        return ExpressionType.UNDEFINED;
-    }
-
-    private List<String> getList(Stylesheet root) {
-        List<String> list = new ArrayList<>();
-        for (ASTNode child : root.getChildren()) {
-            if (child instanceof VariableAssignment) {
-                for (ASTNode child2 : child.getChildren()) {
-                    if (child2 instanceof VariableReference) {
-                        list.add(((VariableReference) child2).name);
-                    }
-                }
-            }
-        }
-        return list;
-    }
 }

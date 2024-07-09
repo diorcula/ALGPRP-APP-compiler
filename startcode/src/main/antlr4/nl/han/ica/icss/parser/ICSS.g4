@@ -40,29 +40,56 @@ MUL: '*';
 ASSIGNMENT_OPERATOR: ':=';
 
 //--- PARSER: ---
-stylesheet: variableAssignment* stylerule* EOF;
-stylerule: selector OPEN_BRACE body CLOSE_BRACE;
-body: (declaration | variableAssignment | ifClause)*;
+stylesheet: variableAssignment* styleRule* EOF;
+styleRule: selector OPEN_BRACE ruleBody CLOSE_BRACE;
+declaration: propertyName COLON expression SEMICOLON;
+propertyName: LOWER_IDENT;
 
-variableAssignment: variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
-declaration: propertyname COLON expression SEMICOLON;
+variableAssignment: variableReference ASSIGNMENT_OPERATOR expression+ SEMICOLON;
+
+ifClause: IF BOX_BRACKET_OPEN (variableReference | boolLiteral) BOX_BRACKET_CLOSE OPEN_BRACE ruleBody CLOSE_BRACE elseClause?;
+elseClause: ELSE OPEN_BRACE ruleBody CLOSE_BRACE;
+
 expression: literal | expression MUL expression | expression (PLUS | MIN) expression;
 
-ifClause: IF BOX_BRACKET_OPEN (variableReference | boolliteral) BOX_BRACKET_CLOSE OPEN_BRACE body CLOSE_BRACE elseClause?;
-elseClause: ELSE OPEN_BRACE body CLOSE_BRACE;
-
-selector: (tagselector | idselector | classselector);
-classselector: CLASS_IDENT;
-idselector: ID_IDENT;
-tagselector: LOWER_IDENT;
+boolLiteral: TRUE | FALSE;
+colorLiteral: COLOR;
+percentageLiteral: PERCENTAGE;
+pixelLiteral: PIXELSIZE;
+scalarLiteral: SCALAR;
 variableReference: CAPITAL_IDENT;
-propertyname: LOWER_IDENT | CAPITAL_IDENT;
+literal: boolLiteral | colorLiteral | percentageLiteral | pixelLiteral | scalarLiteral | variableReference;
 
-literal: boolliteral | variableReference | colorliteral |
-         percentageliteral | pixelliteral | scalarliteral ;
-boolliteral: TRUE|FALSE;
-colorliteral: COLOR;
-percentageliteral: PERCENTAGE;
-pixelliteral: PIXELSIZE;
-scalarliteral: SCALAR;
+classSelector: CLASS_IDENT;
+tagSelector: LOWER_IDENT;
+idSelector: ID_IDENT | COLOR;
+selector: (tagSelector | classSelector | idSelector);
+
+ruleBody: (declaration | ifClause | variableAssignment)*;
+
+//stylesheet: variableAssignment* stylerule* EOF;
+//stylerule: selector OPEN_BRACE body CLOSE_BRACE;
+//body: (declaration | variableAssignment | ifClause)*;
+//
+//variableAssignment: variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
+//declaration: propertyname COLON expression SEMICOLON;
+//expression: literal | expression MUL expression | expression (PLUS | MIN) expression;
+//
+//ifClause: IF BOX_BRACKET_OPEN (variableReference | boolliteral) BOX_BRACKET_CLOSE OPEN_BRACE body CLOSE_BRACE elseClause?;
+//elseClause: ELSE OPEN_BRACE body CLOSE_BRACE;
+//
+//selector: (tagselector | idselector | classselector);
+//classselector: CLASS_IDENT;
+//idselector: ID_IDENT;
+//tagselector: LOWER_IDENT;
+//variableReference: CAPITAL_IDENT;
+//propertyname: LOWER_IDENT | CAPITAL_IDENT;
+//
+//literal: boolliteral | variableReference | colorliteral |
+//         percentageliteral | pixelliteral | scalarliteral ;
+//boolliteral: TRUE|FALSE;
+//colorliteral: COLOR;
+//percentageliteral: PERCENTAGE;
+//pixelliteral: PIXELSIZE;
+//scalarliteral: SCALAR;
 
