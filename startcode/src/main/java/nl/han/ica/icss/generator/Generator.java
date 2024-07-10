@@ -67,7 +67,7 @@ public class Generator {
 			return ((PercentageLiteral) expres).value + "%";
 		}
 		if (expres instanceof ColorLiteral) {
-			return ("#" + ((ColorLiteral) expres).value);
+			return (((ColorLiteral) expres).value); //haal de # weg, want die zit er al in.
 		}
 		if (expres instanceof PixelLiteral) {
 			return ((PixelLiteral) expres).value + "px";

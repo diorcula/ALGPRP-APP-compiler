@@ -20,7 +20,6 @@ a {
 	color: LinkColor;
 }
 
-ParWidth := 500px;
 #menu {
 	width: ParWidth + 20px;
 }

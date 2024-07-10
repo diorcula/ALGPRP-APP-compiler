@@ -105,8 +105,6 @@ public class Evaluator implements Transform {
     }
 
     private void transformDeclaration(Declaration declaration) {
-        System.out.println("transformDeclaration::----declaration " +declaration);
-        System.out.println("transformDeclaration::----declaration.expression " +declaration.expression);
         declaration.expression = this.transformExpression(declaration.expression);
     }
 
@@ -114,8 +112,8 @@ public class Evaluator implements Transform {
     private void transformVariableAssignment(VariableAssignment variableAssignment) {
         Expression expression = variableAssignment.expression;
         variableAssignment.expression = this.transformExpression(expression);
-        this.variableValues.putVariable(variableAssignment.name.name,
-                (Literal) variableAssignment.expression);
+        System.out.println(variableAssignment + "---" + variableAssignment.name +"---"+ variableAssignment.name.name);
+        this.variableValues.putVariable(variableAssignment.name.name, (Literal) variableAssignment.expression);
     }
 
 
