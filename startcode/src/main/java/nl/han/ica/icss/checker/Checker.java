@@ -32,7 +32,7 @@ public class Checker {
 
     private void checkStyleRule(ASTNode astNode) {
         Stylerule stylerule = (Stylerule) astNode;
-        addNewScope();//---> hier ook een nieuwe scope want anders kan je niet checken of de variabelen in de scope zitten.
+        addNewScope();//---> hier ook een nieuwe scope want anders check je alleen varAssignments.
         checkRuleBody(stylerule);
     }
 
@@ -49,7 +49,7 @@ public class Checker {
 
 
     /*
-    CHECK 4: Controleer of bij declaraties het type van de value klopt met de property.
+    CH04: Controleer of bij declaraties het type van de value klopt met de property.
     Declaraties zoals `width: #ff0000` of `color: 12px` zijn natuurlijk onzin.
     */
     private void checkDeclaration(ASTNode astNode) {
@@ -78,18 +78,16 @@ public class Checker {
 
     }
 
+
     /*
-    check van welk type een expression is.
-     */
+CH01: Controleer of er geen variabelen worden gebruikt die niet gedefinieerd zijn.
+ */
     private ExpressionType checkExpression(Expression expression) {
         if (expression instanceof VariableReference) {
             return checkVariableReference((VariableReference) expression);
-        }
-        else if (expression instanceof Operation) {
+        } else if (expression instanceof Operation) {
             return checkOperation((Operation) expression);
-        }
-        else
-        if (expression instanceof PercentageLiteral) {
+        } else if (expression instanceof PercentageLiteral) {
             return ExpressionType.PERCENTAGE;
         } else if (expression instanceof PixelLiteral) {
             return ExpressionType.PIXEL;
@@ -103,6 +101,9 @@ public class Checker {
         return ExpressionType.UNDEFINED;
     }
 
+    /*
+CH01: Controleer of er geen variabelen worden gebruikt die niet gedefinieerd zijn.
+ */
     private ExpressionType checkVariableReference(VariableReference expression) {
         // kijk of de varReference in de scope zit.
         for (int i = 0; i < variableTypes.getSize(); i++) {
@@ -116,9 +117,6 @@ public class Checker {
 
     /*
     CH01: Controleer of er geen variabelen worden gebruikt die niet gedefinieerd zijn.
-    --> Maak gebruik van een scope (een nieuw blok) waar je variabelen kan definen.
-    --> voeg variabelen toe aan de scope.
-    --> Check of de variabele al bestaat in de scope.
      */
     private void addNewScope() {
         HashMap<String, ExpressionType> newScope = new HashMap<>();
@@ -127,10 +125,10 @@ public class Checker {
 
     private void addVariableToCurrentScope(String variableName, ExpressionType type) {
         if (variableTypes.getSize() == 0) {
-            addNewScope(); // Ensure there's at least one scope.
+            addNewScope();
         }
-        HashMap<String, ExpressionType> currentScope = variableTypes.getFirst(); // Get the current scope.
-        currentScope.put(variableName, type); // Add or update the variable in the current scope.
+        HashMap<String, ExpressionType> currentScope = variableTypes.getFirst();
+        currentScope.put(variableName, type);
     }
 
     private void checkVariableAssignment(ASTNode astNode) {
@@ -155,6 +153,7 @@ public class Checker {
         ExpressionType left;
         ExpressionType right;
 
+        // Je kan er voor kiezen dit recursive te doen als je er meer complexe operations zijn met meer dan 2 onderdelen.
         left = checkExpression(operation.lhs);
         right = checkExpression(operation.rhs);
 
@@ -162,27 +161,26 @@ public class Checker {
         if (left == ExpressionType.COLOR || right == ExpressionType.COLOR) {
             operation.setError("Colors are not allowed in operations.");
             return ExpressionType.UNDEFINED;
-        }
-
-        // CH02: Controleer of de operanden van de operaties plus en min van gelijk type zijn.
-        if ((operation instanceof SubtractOperation || operation instanceof AddOperation) && left != right) {
-            operation.setError("You can only do add and subtract operations with the same literal.");
-            return ExpressionType.UNDEFINED;
-        }
-        return left; //je kan hier left of right returnen, deze zijn toch van hetzelfde type.
-    }
-    else if (operation instanceof MultiplyOperation) {
-            if (left != ExpressionType.SCALAR || right != ExpressionType.SCALAR) { // je moet hier kijken of ten minste 1 dit is, && niet goed?
+        } else if (operation instanceof MultiplyOperation) {
+            if (left != ExpressionType.SCALAR && right != ExpressionType.SCALAR) {
                 operation.setError("Multiply is only allowed with at least one scalar literal.");
                 return ExpressionType.UNDEFINED;
             }
-            return right != ExpressionType.SCALAR ? right : left; //wat doet deze regel?
+            return right != ExpressionType.SCALAR ? right : left;
+        } else {
+            // CH02: Controleer of de operanden van de operaties plus en min van gelijk type zijn.
+            if ((operation instanceof SubtractOperation || operation instanceof AddOperation) && left != right) {
+                operation.setError("You can only do add and subtract operations with the same literal.");
+                return ExpressionType.UNDEFINED;
+            }
+            return left; //je kan hier left of right returnen, deze zijn toch van hetzelfde type.
         }
+
     }
 
 
-        //---------------------------------------------
-        // hier check je ook nested operations. Anders kun je gewoon operation.lhs en rhs gebruiken
+    //---------------------------------------------
+    // hier check je ook complexe operations. Anders kun je gewoon operation.lhs en rhs gebruiken
 //        if (operation.lhs instanceof Operation) {
 //            left = this.checkOperation((Operation) operation.lhs);
 //        } else {
@@ -194,27 +192,5 @@ public class Checker {
 //        } else {
 //            right = checkExpression(operation.rhs);
 //        }
-
-//        // CH03: Controleer of kleuren niet in operaties worden gebruikt.
-//        if (left == ExpressionType.COLOR || right == ExpressionType.COLOR) {
-//            operation.setError("Colors are not allowed in operations.");
-//            return ExpressionType.UNDEFINED;
-//        }
-
-        // werk later uit na subtract en add.
-//        if (operation instanceof MultiplyOperation) {
-//            if (left != ExpressionType.SCALAR || right != ExpressionType.SCALAR) { // je moet hier kijken of ten minste 1 dit is, && niet goed?
-//                operation.setError("Multiply is only allowed with at least one scalar literal.");
-//                return ExpressionType.UNDEFINED;
-//            }
-//            return right != ExpressionType.SCALAR ? right : left; //wat doet deze regel?
-//        }
-//         // CH02: Controleer of de operanden van de operaties plus en min van gelijk type zijn.
-//        else if ((operation instanceof SubtractOperation || operation instanceof AddOperation) && left != right) {
-//            operation.setError("You can only do add and subtract operations with the same literal.");
-//            return ExpressionType.UNDEFINED;
-//        }
-//        return left; // waarom return left?
-//    }
 
 }

@@ -9,7 +9,7 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
     @Override
     public void addFirst(T value) {
         if (head == null) {
-          head = new ListNode<T>(value, null);
+            head = new ListNode<T>(value, null);
         } else {
             ListNode<T> newListNode = new ListNode<T>(value, head);
             head = newListNode;
@@ -53,16 +53,6 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
         }
     }
 
-    private static class ListNode<T> {
-        T element;
-        ListNode<T> next;
-
-        ListNode(T element, ListNode<T> next) {
-            this.element = element;
-            this.next = next;
-        }
-    }
-
     @Override
     public void clear() {
 
@@ -87,5 +77,15 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
         }
 
         return tmp.element;
+    }
+
+    private static class ListNode<T> {
+        T element;
+        ListNode<T> next;
+
+        ListNode(T element, ListNode<T> next) {
+            this.element = element;
+            this.next = next;
+        }
     }
 }

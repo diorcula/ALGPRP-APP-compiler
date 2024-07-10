@@ -66,30 +66,3 @@ idSelector: ID_IDENT | COLOR;
 selector: (tagSelector | classSelector | idSelector);
 
 ruleBody: (declaration | ifClause | variableAssignment)*;
-
-//stylesheet: variableAssignment* stylerule* EOF;
-//stylerule: selector OPEN_BRACE body CLOSE_BRACE;
-//body: (declaration | variableAssignment | ifClause)*;
-//
-//variableAssignment: variableReference ASSIGNMENT_OPERATOR expression SEMICOLON;
-//declaration: propertyname COLON expression SEMICOLON;
-//expression: literal | expression MUL expression | expression (PLUS | MIN) expression;
-//
-//ifClause: IF BOX_BRACKET_OPEN (variableReference | boolliteral) BOX_BRACKET_CLOSE OPEN_BRACE body CLOSE_BRACE elseClause?;
-//elseClause: ELSE OPEN_BRACE body CLOSE_BRACE;
-//
-//selector: (tagselector | idselector | classselector);
-//classselector: CLASS_IDENT;
-//idselector: ID_IDENT;
-//tagselector: LOWER_IDENT;
-//variableReference: CAPITAL_IDENT;
-//propertyname: LOWER_IDENT | CAPITAL_IDENT;
-//
-//literal: boolliteral | variableReference | colorliteral |
-//         percentageliteral | pixelliteral | scalarliteral ;
-//boolliteral: TRUE|FALSE;
-//colorliteral: COLOR;
-//percentageliteral: PERCENTAGE;
-//pixelliteral: PIXELSIZE;
-//scalarliteral: SCALAR;
-
