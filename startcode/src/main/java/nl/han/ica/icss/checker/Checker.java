@@ -179,7 +179,7 @@ CH01: Controleer of er geen variabelen worden gebruikt die niet gedefinieerd zij
     }
 
 
-    //---------------------------------------------
+//---------------------------------------------
     // hier check je ook complexe operations. Anders kun je gewoon operation.lhs en rhs gebruiken
 //        if (operation.lhs instanceof Operation) {
 //            left = this.checkOperation((Operation) operation.lhs);
