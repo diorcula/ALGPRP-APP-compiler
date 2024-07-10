@@ -23,13 +23,10 @@ public class Generator {
 		for (ASTNode node : astNode.getChildren()) {
 			if (node instanceof Stylerule) {
 				this.generateSelector(node);
-
 				this.generateDeclaration(node);
-
 				this.sb.append("}\n\n");
 			}
 		}
-
 		// Remove one \n character.
 		if (this.sb.length() > 1) {
 			this.sb.delete(this.sb.length() - 1, this.sb.length());
@@ -39,38 +36,36 @@ public class Generator {
 	private void generateSelector(ASTNode astNode) {
 		Stylerule stylerule = (Stylerule) astNode;
 
-
 		for (var selector :stylerule.selectors){
-			sb.append(selector.toString() + ", ");
+//			sb.append(selector.toString() + ", "); //niet nodig
+			sb.append(selector.toString());
 		}
 
-		sb.delete(sb.length() -2, sb.length()); // required for cleanup of ", "
-
-
+//		sb.delete(sb.length() -2, sb.length()); // niet nodig als er toch geen comma in zit: check dit
 		this.sb.append(" {\n");
 	}
 
 	private void generateDeclaration(ASTNode astNode) {
 		var ident = new StringBuilder();
-		ident.append("  ");
+		ident.append("  "); // hier spring je twee spaties in
 		for (ASTNode node : astNode.getChildren()) {
 			if (node instanceof Declaration) {
 				Declaration declaration = (Declaration) node;
 				this.sb.append(ident+ declaration.property.name + ": ")
-						.append(this.expresToString(declaration.expression) + ";\n");
+						.append(this.expressionToString(declaration.expression) + ";\n");
 			}
 		}
 	}
 
-	private String expresToString(Expression expres) {
-		if (expres instanceof PercentageLiteral) {
-			return ((PercentageLiteral) expres).value + "%";
+	private String expressionToString(Expression expression) {
+		if (expression instanceof PercentageLiteral) {
+			return ((PercentageLiteral) expression).value + "%";
 		}
-		if (expres instanceof ColorLiteral) {
-			return (((ColorLiteral) expres).value); //haal de # weg, want die zit er al in.
+		if (expression instanceof ColorLiteral) {
+			return (((ColorLiteral) expression).value); //haal de # weg, want die zit er al in.
 		}
-		if (expres instanceof PixelLiteral) {
-			return ((PixelLiteral) expres).value + "px";
+		if (expression instanceof PixelLiteral) {
+			return ((PixelLiteral) expression).value + "px";
 		}
 
 		return ""; // scalar

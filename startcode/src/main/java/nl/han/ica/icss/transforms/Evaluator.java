@@ -29,7 +29,7 @@ public class Evaluator implements Transform {
 
         for (ASTNode child : astNode.getChildren()) {
             if (child instanceof VariableAssignment) {
-                this.transformVariableAssignment((VariableAssignment) child);
+                this.transformVariableAssignment((VariableAssignment) child); //added before it is removed
                 toRemove.add(child);
                 continue;
             }
@@ -108,11 +108,11 @@ public class Evaluator implements Transform {
         declaration.expression = this.transformExpression(declaration.expression);
     }
 
-    // save var to viariablevalues and before is added to components to remove
+    // save var to viariablevalues before its node is removed
     private void transformVariableAssignment(VariableAssignment variableAssignment) {
         Expression expression = variableAssignment.expression;
         variableAssignment.expression = this.transformExpression(expression);
-        System.out.println(variableAssignment + "---" + variableAssignment.name +"---"+ variableAssignment.name.name);
+//        System.out.println(variableAssignment + "---" + variableAssignment.name +"---"+ variableAssignment.name.name);
         this.variableValues.putVariable(variableAssignment.name.name, (Literal) variableAssignment.expression);
     }
 
@@ -136,19 +136,21 @@ public class Evaluator implements Transform {
         int leftValue;
         int rightValue;
 
-        //bereken links tot in de dieptste child
-        if (operation.lhs instanceof Operation) {
-            left = this.transformOperation((Operation) operation.lhs);
-        } else if (operation.lhs instanceof VariableReference) {
+        //recursive doorgaan tot het allerdiepste child
+//        if (operation.lhs instanceof Operation) {
+//            left = this.transformOperation((Operation) operation.lhs);
+//        } else
+            if (operation.lhs instanceof VariableReference) {
             left = this.variableValues.getVariable(((VariableReference) operation.lhs).name);
         } else {
             left = (Literal) operation.lhs;
         }
 
-        //bereken rechts tot in de dieptste child
-        if (operation.rhs instanceof Operation) {
-            right = this.transformOperation((Operation) operation.rhs);
-        } else if (operation.rhs instanceof VariableReference) {
+        //dit is recursive en is niet per se nodig, wel voor een super programmeur ;)
+//        if (operation.rhs instanceof Operation) {
+//            right = this.transformOperation((Operation) operation.rhs);
+//        } else
+            if (operation.rhs instanceof VariableReference) {
             right = this.variableValues.getVariable(((VariableReference) operation.rhs).name);
         } else {
             right = (Literal) operation.rhs;
@@ -159,7 +161,7 @@ public class Evaluator implements Transform {
 
 
         if (operation instanceof AddOperation) {
-            System.out.println("add operation:: ----- " + leftValue + " + " + rightValue);
+            System.out.println("add operation:: ----- " +leftValue + " + " + rightValue);
             return this.cleanLit(left, leftValue + rightValue);
         } else if (operation instanceof SubtractOperation) {
             return this.cleanLit(left, leftValue - rightValue);

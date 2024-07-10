@@ -23,6 +23,7 @@ public class Checker {
         for (ASTNode child : stylesheet.getChildren()) {
             if (child instanceof VariableAssignment) {
                 checkVariableAssignment(child);
+                // hier kun je remove current scope gebruiken voor CH05
             }
             if (child instanceof Stylerule) {
                 checkStyleRule(child);
@@ -34,6 +35,7 @@ public class Checker {
         Stylerule stylerule = (Stylerule) astNode;
         addNewScope();//---> hier ook een nieuwe scope want anders check je alleen varAssignments.
         checkRuleBody(stylerule);
+        removeCurrentScope();
     }
 
     private void checkRuleBody(ASTNode astNode) {
@@ -46,7 +48,6 @@ public class Checker {
             }
         }
     }
-
 
     /*
     CH04: Controleer of bij declaraties het type van de value klopt met de property.
@@ -104,6 +105,18 @@ CH01: Controleer of er geen variabelen worden gebruikt die niet gedefinieerd zij
     /*
 CH01: Controleer of er geen variabelen worden gebruikt die niet gedefinieerd zijn.
  */
+    private void checkVariableAssignment(ASTNode astNode) {
+        VariableAssignment variableAssignment = (VariableAssignment) astNode;
+        VariableReference variableReference = variableAssignment.name;
+        ExpressionType expressionType = checkExpression(variableAssignment.expression);
+
+        if (expressionType == null || expressionType == ExpressionType.UNDEFINED) {
+            astNode.setError("Variable assignment is undefined/null.");
+            return;
+        }
+        addVariableToCurrentScope(variableReference.name, expressionType);
+    }
+
     private ExpressionType checkVariableReference(VariableReference expression) {
         // kijk of de varReference in de scope zit.
         for (int i = 0; i < variableTypes.getSize(); i++) {
@@ -115,12 +128,13 @@ CH01: Controleer of er geen variabelen worden gebruikt die niet gedefinieerd zij
         return ExpressionType.UNDEFINED;
     }
 
-    /*
-    CH01: Controleer of er geen variabelen worden gebruikt die niet gedefinieerd zijn.
-     */
     private void addNewScope() {
         HashMap<String, ExpressionType> newScope = new HashMap<>();
         variableTypes.addFirst(newScope); // Assuming the latest scope is at the beginning.
+    }
+    // Remove the current scope when exiting a block
+    private void removeCurrentScope() {
+        variableTypes.removeFirst();
     }
 
     private void addVariableToCurrentScope(String variableName, ExpressionType type) {
@@ -129,18 +143,6 @@ CH01: Controleer of er geen variabelen worden gebruikt die niet gedefinieerd zij
         }
         HashMap<String, ExpressionType> currentScope = variableTypes.getFirst();
         currentScope.put(variableName, type);
-    }
-
-    private void checkVariableAssignment(ASTNode astNode) {
-        VariableAssignment variableAssignment = (VariableAssignment) astNode;
-        VariableReference variableReference = variableAssignment.name;
-        ExpressionType expressionType = checkExpression(variableAssignment.expression);
-
-        if (expressionType == null || expressionType == ExpressionType.UNDEFINED) {
-            astNode.setError("Variable assignment is undefined/null.");
-            return;
-        }
-        addVariableToCurrentScope(variableReference.name, expressionType);
     }
 
     /*
