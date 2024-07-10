@@ -1,9 +1,7 @@
 package nl.han.ica.datastructures;
 
-import nl.han.ica.icss.checker.SemanticError;
-
 public class HANLinkedList<T> implements IHANLinkedList<T> {
-    private Node<T> head = null;
+    private ListNode<T> head = null;
 
     public HANLinkedList() {
     }
@@ -11,10 +9,10 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
     @Override
     public void addFirst(T value) {
         if (head == null) {
-          head = new Node<T>(value, null);
+          head = new ListNode<T>(value, null);
         } else {
-            Node<T> newNode = new Node<T>(value, head);
-            head = newNode;
+            ListNode<T> newListNode = new ListNode<T>(value, head);
+            head = newListNode;
         }
     }
 
@@ -34,7 +32,10 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
     @Override
     public int getSize() {
         int size = 0;
-        Node<T> current = head;
+        ListNode<T> current = head;
+        if (current == null) {
+            return 0;
+        }
         while (current.next != null) {
             size++;
             current = current.next;
@@ -43,20 +44,20 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
     }
 
     public void printList(HANLinkedList<T> list) {
-        Node<T> currentNode = list.head.next;
+        ListNode<T> currentListNode = list.head.next;
         System.out.println("DE LIST: ");
 
-        while (currentNode != null) {
-            System.out.println(currentNode.element + "---");
-            currentNode = currentNode.next;
+        while (currentListNode != null) {
+            System.out.println(currentListNode.element + "---");
+            currentListNode = currentListNode.next;
         }
     }
 
-    private static class Node<T> {
+    private static class ListNode<T> {
         T element;
-        Node<T> next;
+        ListNode<T> next;
 
-        Node(T element, Node<T> next) {
+        ListNode(T element, ListNode<T> next) {
             this.element = element;
             this.next = next;
         }
@@ -79,6 +80,12 @@ public class HANLinkedList<T> implements IHANLinkedList<T> {
 
     @Override
     public T get(int pos) {
-        return null;
+        ListNode<T> tmp = head;
+
+        for (int i = 0; i <= pos; i++) {
+            tmp = tmp.next;
+        }
+
+        return tmp.element;
     }
 }

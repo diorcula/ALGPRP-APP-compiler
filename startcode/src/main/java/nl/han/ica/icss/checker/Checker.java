@@ -20,10 +20,7 @@ public class Checker {
     }
 
     private void checkStyleSheet(Stylesheet stylesheet) {
-        System.out.println("checking stylesheet");
-
         for (ASTNode child : stylesheet.getChildren()) {
-            System.out.println("checking children in stylesheet" + child.toString());
             if (child instanceof VariableAssignment) {
                 checkVariableAssignment(child);
             }
@@ -34,10 +31,18 @@ public class Checker {
     }
 
     private void checkStyleRule(ASTNode astNode) {
+        Stylerule stylerule = (Stylerule) astNode;
+        addNewScope();//---> waarom?
+        checkRuleBody(stylerule);
+    }
+
+    private void checkRuleBody(ASTNode astNode) {
         for (ASTNode child : astNode.getChildren()) {
             if (child instanceof Declaration) {
-                System.out.println("checking declaration - " + child);
                 checkDeclaration(child);
+            }
+            if (child instanceof VariableAssignment) {
+                checkVariableAssignment(child);
             }
         }
     }
@@ -50,6 +55,8 @@ public class Checker {
     private void checkDeclaration(ASTNode astNode) {
         Declaration declaration = (Declaration) astNode;
         ExpressionType expressionType = checkExpression(declaration.expression);
+
+        System.out.println("----Expression type: " + expressionType + declaration.property.name);
 
         switch (declaration.property.name) {
             case "color":
@@ -75,11 +82,9 @@ public class Checker {
     check van welk type een expression is.
      */
     private ExpressionType checkExpression(Expression expression) {
-//        if (expression instanceof VariableReference) {
-//            return checkVariableReference((VariableReference) expression); //---> kijk of hier de var reference al gedefined is.
-//        } else if (expression instanceof Operation) {
-//            return checkOperation((Operation) expression); //---> check of de operation wel mag.
-//        } else {
+        if (expression instanceof VariableReference) {
+            return checkVariableReference((VariableReference) expression);
+        }
         if (expression instanceof PercentageLiteral) {
             return ExpressionType.PERCENTAGE;
         } else if (expression instanceof PixelLiteral) {
@@ -91,7 +96,20 @@ public class Checker {
         } else if (expression instanceof BoolLiteral) {
             return ExpressionType.BOOL;
         }
-//        }
+        return ExpressionType.UNDEFINED;
+    }
+
+    private ExpressionType checkVariableReference(VariableReference expression) {
+        // kijk of de varReference in de scope zit.
+        System.out.println("variabletypes: ------>" +variableTypes);
+//        System.out.println(expression.name + "------");
+
+        for (int i = 0; i < variableTypes.getSize(); i++) {
+            HashMap<String, ExpressionType> scope = variableTypes.get(i);
+            if (scope.containsKey(expression.name)) {
+                return scope.get(expression.name);
+            }
+        }
 
         return ExpressionType.UNDEFINED;
     }
@@ -118,19 +136,21 @@ public class Checker {
     private void checkVariableAssignment(ASTNode astNode) {
         VariableAssignment variableAssignment = (VariableAssignment) astNode;
         VariableReference variableReference = variableAssignment.name;
-        ExpressionType expressionType = this.checkExpression(variableAssignment.expression);
+        ExpressionType expressionType = checkExpression(variableAssignment.expression);
 
         if (expressionType == null || expressionType == ExpressionType.UNDEFINED) {
             astNode.setError("Variable assignment is undefined/null.");
             return;
         }
-//
-//        ExpressionType previousExpressionType = (ExpressionType) this.variableTypes.getFirst().get(variableReference.name);
-//        if (checkExpressionTypeAllowed(expressionType, previousExpressionType)) {
-//            astNode.setError("Variabele mag niet van type veranderen van " + previousExpressionType + " naar " + expressionType);
-//        }
         addVariableToCurrentScope(variableReference.name, expressionType);
     }
+
+    /*
+    CH02: Controleer of de operanden van de operaties plus en min van gelijk type zijn.
+    Je mag geen pixels bij percentages optellen bijvoorbeeld.
+    Controleer dat bij vermenigvuldigen minimaal een operand een scalaire waarde is.
+    Zo mag 20% * 3 en 4 * 5 wel, maar mag 2px * 3px niet.
+     */
 
 
     //-------------------
