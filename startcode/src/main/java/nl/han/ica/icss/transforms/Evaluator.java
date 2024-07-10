@@ -105,6 +105,8 @@ public class Evaluator implements Transform {
     }
 
     private void transformDeclaration(Declaration declaration) {
+        System.out.println("transformDeclaration::----declaration " +declaration);
+        System.out.println("transformDeclaration::----declaration.expression " +declaration.expression);
         declaration.expression = this.transformExpression(declaration.expression);
     }
 
@@ -159,6 +161,7 @@ public class Evaluator implements Transform {
 
 
         if (operation instanceof AddOperation) {
+            System.out.println("add operation:: ----- " + leftValue + " + " + rightValue);
             return this.cleanLit(left, leftValue + rightValue);
         } else if (operation instanceof SubtractOperation) {
             return this.cleanLit(left, leftValue - rightValue);

@@ -5,6 +5,9 @@ import nl.han.ica.datastructures.HANStack;
 import nl.han.ica.datastructures.IHANStack;
 import nl.han.ica.icss.ast.*;
 import nl.han.ica.icss.ast.literals.*;
+import nl.han.ica.icss.ast.operations.AddOperation;
+import nl.han.ica.icss.ast.operations.MultiplyOperation;
+import nl.han.ica.icss.ast.operations.SubtractOperation;
 import nl.han.ica.icss.ast.selectors.ClassSelector;
 import nl.han.ica.icss.ast.selectors.IdSelector;
 import nl.han.ica.icss.ast.selectors.TagSelector;
@@ -100,6 +103,37 @@ public class ASTListener extends ICSSBaseListener {
     public void exitElseClause(ICSSParser.ElseClauseContext ctx) {
         ASTNode elseClause = currentContainer.pop();
         currentContainer.peek().addChild(elseClause);
+    }
+
+    @Override
+    public void enterExpression(ICSSParser.ExpressionContext ctx) {
+        if (ctx.getChildCount() == 3) {
+            Operation operation;
+            switch (ctx.getChild(1).getText()) {
+                case "*":
+                    operation = new MultiplyOperation();
+                    break;
+                case "+":
+                    operation = new AddOperation();
+                    break;
+                default:
+                    operation = new SubtractOperation();
+            }
+            currentContainer.push(operation);
+        }
+    }
+
+    @Override
+    public void exitExpression(ICSSParser.ExpressionContext ctx) {
+        if (expressionHasTerminalNode(ctx)) {
+            ASTNode operation = currentContainer.pop();
+            currentContainer.peek().addChild(operation);
+        }
+    }
+
+    // NOTA BENE:
+    private boolean expressionHasTerminalNode(ICSSParser.ExpressionContext ctx) {
+        return ctx.PLUS() != null || ctx.MIN() != null || ctx.MUL() != null;
     }
 
     @Override
