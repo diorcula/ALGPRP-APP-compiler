@@ -31,14 +31,12 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterStylesheet(ICSSParser.StylesheetContext ctx) {
-        // zet iets op de stack
         ASTNode stylesheet = new Stylesheet();
         currentContainer.push(stylesheet);
     }
 
     @Override
     public void exitStylesheet(ICSSParser.StylesheetContext ctx) {
-        // de return value van curr.pop() is een T, dus moet je casten naar Stylesheet
         ast.setRoot((Stylesheet) currentContainer.pop());
     }
 
@@ -51,9 +49,6 @@ public class ASTListener extends ICSSBaseListener {
     @Override
     public void exitStyleRule(ICSSParser.StyleRuleContext ctx) {
         ASTNode styleRule = currentContainer.pop();
-        // je gebruikt hier peek() omdat de stylerule er vanaf.
-        // met peek krijg je de eerste terug van de stack,
-        // waar je hem als child wil toevoegen
         currentContainer.peek().addChild(styleRule);
     }
 
@@ -82,6 +77,31 @@ public class ASTListener extends ICSSBaseListener {
 //        currentContainer.peek().addChild(variableReference);
 //    }
 
+
+    @Override
+    public void enterIfClause(ICSSParser.IfClauseContext ctx) {
+        ASTNode ifClause = new IfClause();
+        currentContainer.push(ifClause);
+    }
+
+    @Override
+    public void exitIfClause(ICSSParser.IfClauseContext ctx) {
+        ASTNode ifClause = currentContainer.pop();
+        currentContainer.peek().addChild(ifClause);
+    }
+
+    @Override
+    public void enterElseClause(ICSSParser.ElseClauseContext ctx) {
+        ASTNode elseClause = new ElseClause();
+        currentContainer.push(elseClause);
+    }
+
+    @Override
+    public void exitElseClause(ICSSParser.ElseClauseContext ctx) {
+        ASTNode elseClause = currentContainer.pop();
+        currentContainer.peek().addChild(elseClause);
+    }
+
     @Override
     public void enterTagSelector(ICSSParser.TagSelectorContext ctx) {
         ASTNode tagSelector = new TagSelector(ctx.getText());
@@ -96,7 +116,6 @@ public class ASTListener extends ICSSBaseListener {
 
     @Override
     public void enterClassSelector(ICSSParser.ClassSelectorContext ctx) {
-        // let op hier heb je de text nodig om te weten welke class het is
         ASTNode classSelector = new ClassSelector(ctx.getText());
         currentContainer.push(classSelector);
     }
